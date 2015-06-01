@@ -558,7 +558,6 @@ suite('mml_builder', function() {
       function() {
         mml_builder.toXML(function(err, data){
           if ( err ) { mml_builder.delStyle(function() { done(err); }); return; }
-		  console.log(data);
           var xmlDoc = libxmljs.parseXmlString(data);
           var x = xmlDoc.get("//Parameter[@name='type']");
           assert.ok(x);
