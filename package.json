@@ -21,20 +21,20 @@
       "Sandro Santilli <strk@vizzuality.com>"
     ],
     "dependencies": {
-        "redis-mpool": "https://github.com/CartoDB/node-redis-mpool/tarball/0.1.0",
+        "redis-mpool": "git://github.com/BHare1985/node-redis-mpool.git",
         "carto": "https://github.com/CartoDB/carto/tarball/0.9.5-cdb2",
-        "millstone": "0.6.14",
+        "millstone": "git://github.com/BHare1985/millstone.git",
         "step": "~0.0.5",
         "underscore": "~1.6.0",
         "semver": "~1.1.4"
     },
     "devDependencies": {
-        "mocha": "~1.14.0",
+        "mocha": "2.2.5",
         "redis": "~0.8.3",
-        "libxmljs": "~0.8.1"
+        "libxmljs": "0.14.1"
     },
     "scripts": {
-        "test": "test/support/run_tests.sh ${RUNTESTFLAGS} test/*.js"
+        "test": "mocha -u tdd"
     },
     "engines": {
         "node": ">= 0.4.0"

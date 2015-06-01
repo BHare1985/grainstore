@@ -3,6 +3,6 @@ module.exports = {
   max: 10, 
   idleTimeoutMillis: 1, 
   reapIntervalMillis: 1,
-  port: 6333
+  port: 6379
 };
 

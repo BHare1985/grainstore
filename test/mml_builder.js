@@ -11,6 +11,19 @@ var redis_opts = require('./support/redis_opts');
 var redis_client = redis.createClient(redis_opts.port);
 var server;
 
+platformPath = function(path) {
+	if (process.platform !== 'win32') {
+		return path;
+	}
+	
+	// single \ will escape regex, so need escaped \ (i.e \\)
+	var windows = path.replace(/[\/]/g, '\\\\');
+	if (windows.substring(0, 1) == "\\") {
+		windows = 'C:' + windows;
+	}
+	return windows;
+}
+
 var server_port = 8033;
 
 function dropXMLFromStore(key, callback) {
@@ -916,7 +929,8 @@ suite('mml_builder', function() {
   test('store, retrive and convert to XML a set of reference styles', function(done) {
 
     var cachedir = '/tmp/gt-' + process.pid;
-
+	var regexPath = platformPath(cachedir + '/cache/.*.svg');
+	console.log(new RegExp('PointSymbolizer file="' + regexPath + '"'));
     var styles = [
       // point-transform without point-file
       { cartocss: "#tab { point-transform: 'scale(0.9)'; }",
@@ -924,11 +938,11 @@ suite('mml_builder', function() {
       ,
       // localize external resources
       { cartocss: "#tab { point-file: url('http://localhost:" + server_port + "/circle.svg'); }",
-        xml_re: new RegExp('PointSymbolizer file="' + cachedir + '/cache/.*.svg"') }
+        xml_re: new RegExp('PointSymbolizer file="' + regexPath + '"') }
       ,
       // localize external resources with a + in the url
       { cartocss: "#tab { point-file: url('http://localhost:" + server_port + "/+circle.svg'); }",
-        xml_re: new RegExp('PointSymbolizer file="' + cachedir + '/cache/.*.svg"') }
+        xml_re: new RegExp('PointSymbolizer file="' + regexPath + '"') }
       ,
       // transform marker-width and height from 2.0.0 to 2.1.0 resources with a + in the url
       { cartocss: "#tab { marker-width: 8; marker-height: 3; }",
@@ -1030,12 +1044,14 @@ suite('mml_builder', function() {
       var cdir1 = cachedir + '1';
       var style1 = '#t1 ' + style;
       var store1 = new grainstore.MMLStore(redis_opts, {cachedir: cdir1 });
-      var re1 = new RegExp('PointSymbolizer file="' + cdir1 + '/cache/.*.svg"');
+      var regexPath1 = platformPath(cdir1 + '/cache/.*.svg');
+      var re1 = new RegExp('PointSymbolizer file="'+regexPath1+'"');
 
       var cdir2 = cachedir + '2';
       var style2 = '#t2 ' + style;
       var store2 = new grainstore.MMLStore(redis_opts, {cachedir: cdir2 });
-      var re2 = new RegExp('PointSymbolizer file="' + cdir2 + '/cache/.*.svg"');
+	  var regexPath2 = platformPath(cdir2 + '/cache/.*.svg');
+      var re2 = new RegExp('PointSymbolizer file="'+regexPath2+'"');
 
       var pending = 2;
       var err = [];
