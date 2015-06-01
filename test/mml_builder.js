@@ -64,7 +64,7 @@ suite('mml_builder', function() {
   test('can generate base mml with normal ops', function(done) {
     var mml_store = new grainstore.MMLStore(redis_opts);
     var mml_builder = mml_store.mml_builder(
-      {dbname: 'my_database', table:'my_table'},
+      {dbtype: 'postgis', dbname: 'my_database', table:'my_table'},
       function(err, payload) {
         if ( err ) { done(err); return; }
         //console.dir(payload);
@@ -72,6 +72,7 @@ suite('mml_builder', function() {
     
         assert.ok(_.isArray(baseMML.Layer));
         assert.equal(baseMML.Layer[0].id, 'my_table');
+        assert.equal(baseMML.Layer[0].Datasource.type, 'postgis');
         assert.equal(baseMML.Layer[0].Datasource.dbname, 'my_database');
 
         redis_client.keys("*", function(err, matches) {
@@ -87,7 +88,7 @@ suite('mml_builder', function() {
   test('can be initialized with custom style', function(done) {
     var mml_store = new grainstore.MMLStore(redis_opts, {mapnik_version: '2.1.0'});
     var mml_builder = mml_store.mml_builder(
-      {dbname: 'd', table:'t',
+      {dbtype: 'postgis', dbname: 'd', table:'t',
        style: '#t{}' },
       function(err, payload) {
         if ( err ) { done(err); return; }
@@ -103,7 +104,7 @@ suite('mml_builder', function() {
   test('can be initialized with custom style and version', function(done) {
     var mml_store = new grainstore.MMLStore(redis_opts, {mapnik_version: '2.1.0'});
     var mml_builder = mml_store.mml_builder(
-      {dbname: 'd', table:'t',
+      {dbtype: 'postgis', dbname: 'd', table:'t',
        style: '#t{}', style_version: '2.0.2' },
       function(err, payload) {
         if ( err ) { done(err); return; }
@@ -119,7 +120,7 @@ suite('mml_builder', function() {
   test('can be initialized with custom interactivity', function(done) {
     var mml_store = new grainstore.MMLStore(redis_opts, {mapnik_version: '2.1.0'});
     var mml_builder = mml_store.mml_builder(
-      {dbname: 'd', table:'t',
+      {dbtype: 'postgis', dbname: 'd', table:'t',
        interactivity: 'cartodb_id' },
       function(err, payload) {
         if ( err ) { done(err); return; }
@@ -139,6 +140,7 @@ suite('mml_builder', function() {
             password:'overridden_password'
         }});
     var mml_builder = mml_store.mml_builder({
+            dbtype: 'postgis', 
             dbname: 'my_database',
             table:'my_table',
             // NOTE: authentication tokens here are silently discarded
@@ -149,6 +151,7 @@ suite('mml_builder', function() {
 
       assert.ok(_.isArray(baseMML.Layer));
       assert.equal(baseMML.Layer[0].id, 'my_table');
+      assert.equal(baseMML.Layer[0].Datasource.type, 'postgis');
       assert.equal(baseMML.Layer[0].Datasource.dbname, 'my_database');
       assert.equal(baseMML.Layer[0].Datasource.user, 'overridden_user');
       assert.equal(baseMML.Layer[0].Datasource.password, 'overridden_password');
@@ -166,7 +169,7 @@ suite('mml_builder', function() {
     test('search_path is set in the datasource', function(done) {
         var search_path = "'foo', 'bar'";
         var mml_store = new grainstore.MMLStore(redis_opts);
-        var mml_builder = mml_store.mml_builder({dbname: 'my_database', table:'my_table', search_path: search_path}, function() {
+        var mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'my_database', table:'my_table', search_path: search_path}, function() {
             var baseMML = mml_builder.baseMML();
             assert.equal(baseMML.Layer[0].Datasource.search_path, search_path);
             done();
@@ -175,7 +178,7 @@ suite('mml_builder', function() {
 
     test('search_path is NOT set in the datasource', function(done) {
         var mml_store = new grainstore.MMLStore(redis_opts);
-        var mml_builder = mml_store.mml_builder({dbname: 'my_database', table:'my_table', search_path: null}, function() {
+        var mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'my_database', table:'my_table', search_path: null}, function() {
             var baseMML = mml_builder.baseMML();
             assert.ok(
                 !baseMML.Layer[0].Datasource.hasOwnProperty('search_path'),
@@ -187,7 +190,7 @@ suite('mml_builder', function() {
 
     test('default format is png', function(done) {
         var mml_store = new grainstore.MMLStore(redis_opts);
-        var mml_builder = mml_store.mml_builder({dbname: 'my_database', table:'my_table'}, function() {
+        var mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'my_database', table:'my_table'}, function() {
             var baseMML = mml_builder.baseMML();
             assert.equal(baseMML.format, 'png');
             done();
@@ -197,7 +200,7 @@ suite('mml_builder', function() {
     test('format can be overwritten with optional args', function(done) {
         var format = 'png32';
         var mml_store = new grainstore.MMLStore(redis_opts, {mapnik_tile_format: format});
-        var mml_builder = mml_store.mml_builder({dbname: 'my_database', table:'my_table'}, function() {
+        var mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'my_database', table:'my_table'}, function() {
             var baseMML = mml_builder.baseMML();
             assert.equal(baseMML.format, format);
             done();
@@ -208,6 +211,7 @@ suite('mml_builder', function() {
     var mml_store = new grainstore.MMLStore(redis_opts, {
         datasource: { user:'shadow_user', password:'shadow_password' }});
     var mml_builder = mml_store.mml_builder({
+            dbtype: 'postgis',
             dbname: 'my_database',
             table:'my_table',
             dbuser:'overridden_user', dbpassword:'overridden_password' }, function() {
@@ -216,6 +220,7 @@ suite('mml_builder', function() {
 
       assert.ok(_.isArray(baseMML.Layer));
       assert.equal(baseMML.Layer[0].id, 'my_table');
+      assert.equal(baseMML.Layer[0].Datasource.type, 'postgis');
       assert.equal(baseMML.Layer[0].Datasource.dbname, 'my_database');
       assert.equal(baseMML.Layer[0].Datasource.user, 'overridden_user');
       assert.equal(baseMML.Layer[0].Datasource.password, 'overridden_password');
@@ -226,9 +231,10 @@ suite('mml_builder', function() {
           assert.equal(matches[0], 'map_style|my_database|my_table');
 
           // Test that new mml_builder, with no overridden user/password, uses the default ones
-          var mml_builder2 = mml_store.mml_builder({dbname:'my_database', table:'my_table'}, function() {
+          var mml_builder2 = mml_store.mml_builder({dbtype: 'postgis', dbname:'my_database', table:'my_table'}, function() {
               var baseMML = mml_builder2.baseMML();
               assert.equal(baseMML.Layer[0].id, 'my_table');
+              assert.equal(baseMML.Layer[0].Datasource.type, 'postgis');
               assert.equal(baseMML.Layer[0].Datasource.dbname, 'my_database');
               assert.equal(baseMML.Layer[0].Datasource.user, 'shadow_user');
               assert.equal(baseMML.Layer[0].Datasource.password, 'shadow_password');
@@ -247,6 +253,7 @@ suite('mml_builder', function() {
     var mml_store = new grainstore.MMLStore(redis_opts, {
         datasource: { host:'shadow_host', port:'shadow_port' }});
     var mml_builder = mml_store.mml_builder({
+            dbtype: 'postgis',
             dbname: 'my_database',
             table:'my_table',
             dbhost:'overridden_host', dbport:'overridden_port' }, function() {
@@ -255,6 +262,7 @@ suite('mml_builder', function() {
 
       assert.ok(_.isArray(baseMML.Layer));
       assert.equal(baseMML.Layer[0].id, 'my_table');
+      assert.equal(baseMML.Layer[0].Datasource.type, 'postgis');
       assert.equal(baseMML.Layer[0].Datasource.dbname, 'my_database');
       assert.equal(baseMML.Layer[0].Datasource.host, 'overridden_host');
       assert.equal(baseMML.Layer[0].Datasource.port, 'overridden_port');
@@ -265,9 +273,10 @@ suite('mml_builder', function() {
           assert.equal(matches[0], 'map_style|my_database|my_table');
 
           // Test that new mml_builder, with no overridden user/password, uses the default ones
-          var mml_builder2 = mml_store.mml_builder({dbname:'my_database', table:'my_table'}, function() {
+          var mml_builder2 = mml_store.mml_builder({dbtype: 'postgis', dbname:'my_database', table:'my_table'}, function() {
               var baseMML = mml_builder2.baseMML();
               assert.equal(baseMML.Layer[0].id, 'my_table');
+              assert.equal(baseMML.Layer[0].Datasource.type, 'postgis');
               assert.equal(baseMML.Layer[0].Datasource.dbname, 'my_database');
               assert.equal(baseMML.Layer[0].Datasource.host, 'shadow_host');
               assert.equal(baseMML.Layer[0].Datasource.port, 'shadow_port');
@@ -283,7 +292,7 @@ suite('mml_builder', function() {
 
   test('can generate base mml with sql ops, maintain id', function(done) {
     var mml_store = new grainstore.MMLStore(redis_opts);
-    var mml_builder = mml_store.mml_builder({dbname: 'my_database', table:'my_table', sql: 'SELECT * from my_table'},
+    var mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'my_database', table:'my_table', sql: 'SELECT * from my_table'},
     function() {
       var baseMML = mml_builder.baseMML();
       assert.equal(baseMML.Layer[0].id, 'my_table');
@@ -308,7 +317,7 @@ suite('mml_builder', function() {
 
   test('can force plain base mml with sql ops', function(done) {
     var mml_store = new grainstore.MMLStore(redis_opts);
-    var mml_builder = mml_store.mml_builder({dbname: 'my_database', table:'my_table', sql: 'SELECT * from my_table'}, function(){
+    var mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'my_database', table:'my_table', sql: 'SELECT * from my_table'}, function(){
       var baseMML = mml_builder.baseMML({use_sql: false});
       assert.equal(baseMML.Layer[0].id, 'my_table');
       assert.equal(baseMML.Layer[0].Datasource.table, 'my_table');
@@ -318,7 +327,7 @@ suite('mml_builder', function() {
 
   test('can generate full mml with style', function(done) {
     var mml_store = new grainstore.MMLStore(redis_opts);
-    var mml_builder = mml_store.mml_builder({dbname: 'my_database', table:'my_table'}, function(){
+    var mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'my_database', table:'my_table'}, function(){
       var mml = mml_builder.toMML("my carto style");
       assert.equal(mml.Stylesheet[0].data, 'my carto style');
       mml_builder.delStyle(done);
@@ -327,7 +336,7 @@ suite('mml_builder', function() {
 
   test('can render XML from full mml with style', function(done) {
     var mml_store = new grainstore.MMLStore(redis_opts);
-    var mml_builder = mml_store.mml_builder({dbname: 'my_database', table:'my_table'}, function() {
+    var mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'my_database', table:'my_table'}, function() {
       mml_builder.render("#my_table {\n  polygon-fill: #fff;\n}", function(err, output){
         assert.ok(_.isNull(err), _.isNull(err) ? '' : err.message);
         assert.ok(output);
@@ -339,7 +348,7 @@ suite('mml_builder', function() {
   test('Render a 2.2.0 style', function(done) {
     var style = "#t { polygon-fill: #fff; }";
     var mml_store = new grainstore.MMLStore(redis_opts, {mapnik_version: '2.2.0'});
-    var mml_builder = mml_store.mml_builder({dbname: 'd', table:'t'}, function() {
+    var mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'd', table:'t'}, function() {
       mml_builder.render(style, function(err, output){
         try {
           assert.ok(_.isNull(err), _.isNull(err) ? '' : err.message);
@@ -356,7 +365,7 @@ suite('mml_builder', function() {
 
   test('can render errors from full mml with bad style', function(done) {
     var mml_store = new grainstore.MMLStore(redis_opts);
-    var mml_builder = mml_store.mml_builder({dbname: 'my_database', table:'my_table'}, function() {
+    var mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'my_database', table:'my_table'}, function() {
       mml_builder.render("#my_table {\n  backgrxxxxxound-color: #fff;\n}", function(err, output){
         assert.ok(err.message.match(/Unrecognized rule/), err.message);
         mml_builder.delStyle(done);
@@ -366,7 +375,7 @@ suite('mml_builder', function() {
 
   test('can render multiple errors from full mml with bad style', function(done) {
     var mml_store = new grainstore.MMLStore(redis_opts);
-    var mml_builder = mml_store.mml_builder({dbname: 'my_database', table:'my_table'}, function() {
+    var mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'my_database', table:'my_table'}, function() {
       mml_builder.render("#my_table {\n  backgrxxound-color: #fff;bad-tag: #fff;\n}", function(err, output){
        assert.ok(err.message.match(/Unrecognized rule[\s\S]*Unrecognized rule/), err.message);
        mml_builder.delStyle(done);
@@ -376,7 +385,7 @@ suite('mml_builder', function() {
 
   test('storing a bad style throws errors', function(done) {
     var mml_store = new grainstore.MMLStore(redis_opts);
-    var mml_builder = mml_store.mml_builder({dbname: 'my_database', table:'my_table'}, function() {
+    var mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'my_database', table:'my_table'}, function() {
       mml_builder.setStyle("#my_table {\n  backgrxxound-color: #fff;bad-tag: #fff;\n}", function(err, output){
        assert.ok(err.message.match(/Unrecognized rule[\s\S]*Unrecognized rule/), err.message);
        mml_builder.delStyle(done);
@@ -386,7 +395,7 @@ suite('mml_builder', function() {
 
   test('storing an unparseable style throws errors', function(done) {
     var mml_store = new grainstore.MMLStore(redis_opts);
-    var mml_builder = mml_store.mml_builder({dbname: 'my_database', table:'my_table'}, function() {
+    var mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'my_database', table:'my_table'}, function() {
       mml_builder.setStyle("{", function(err, output){
        assert.ok(err.message.match(/missing closing .}./i), err.message);
        mml_builder.delStyle(done);
@@ -396,7 +405,7 @@ suite('mml_builder', function() {
 
   test('store a good style', function(done) {
     var mml_store = new grainstore.MMLStore(redis_opts);
-    var mml_builder = mml_store.mml_builder({dbname: 'my_database', table:'my_table'}, function() {
+    var mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'my_database', table:'my_table'}, function() {
       mml_builder.setStyle("#my_table {\n  polygon-fill: #fff;\n}", function(err, output) {
        if ( err ) { done(err); return; }
         mml_builder.delStyle(done);
@@ -407,7 +416,7 @@ suite('mml_builder', function() {
   test('store a good style and retrieve it', function(done) {
     var style = "#my_table {\n  polygon-fill: #fff;\n}";
     var mml_store = new grainstore.MMLStore(redis_opts);
-    var mml_builder = mml_store.mml_builder({dbname: 'my_database', table:'my_table'}, function() {
+    var mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'my_database', table:'my_table'}, function() {
       mml_builder.setStyle(style, function(err, output){
         if ( err ) { done(err); return; }
         mml_builder.getStyle(function(err, data){
@@ -423,7 +432,7 @@ suite('mml_builder', function() {
   test('store a good style with version 2.0.2 and retrieve it', function(done) {
     var style = "#my_table {\n  polygon-fill: #fff;\n}";
     var mml_store = new grainstore.MMLStore(redis_opts);
-    var mml_builder = mml_store.mml_builder({dbname: 'my_database', table:'my_table'}, function() {
+    var mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'my_database', table:'my_table'}, function() {
       mml_builder.setStyle(style, function(err, output){
         if ( err ) { done(err); return; }
         mml_builder.getStyle(function(err, data){
@@ -439,7 +448,7 @@ suite('mml_builder', function() {
   test('store a good style with version 2.0.2 and target_version 2.1.0 and retrieve it', function(done) {
     var style = "#my_table {\n  polygon-fill: #fff;\n}";
     var mml_store = new grainstore.MMLStore(redis_opts, {mapnik_version: '2.1.0'});
-    var mml_builder = mml_store.mml_builder({dbname: 'my_database', table:'my_table'}, function() {
+    var mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'my_database', table:'my_table'}, function() {
       mml_builder.setStyle(style, function(err, output){
         if ( err ) { done(err); return; }
         mml_builder.getStyle(function(err, data){
@@ -458,7 +467,7 @@ suite('mml_builder', function() {
     var style = "#t { marker-width: 3; }";
     var style_converted = '#t { marker-width:6; ["mapnik::geometry_type"=1] { marker-placement:point; marker-type:ellipse; } ["mapnik::geometry_type">1] { marker-placement:line; marker-type:arrow; marker-transform:scale(.5, .5); marker-clip:false; } }';
     var mml_store = new grainstore.MMLStore(redis_opts, {mapnik_version: '2.1.0'});
-    var mml_builder = mml_store.mml_builder({dbname: 'my_database', table:'t'}, function() {
+    var mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'my_database', table:'t'}, function() {
       mml_builder.setStyle(style, function(err, output){
         if ( err ) { done(err); return; }
         mml_builder.getStyle(function(err, data){
@@ -474,7 +483,7 @@ suite('mml_builder', function() {
   test('store a good style and delete it, resetting to default', function(done) {
     var style = "#my_table {\n  polygon-fill: #fff;\n}";
     var mml_store = new grainstore.MMLStore(redis_opts);
-    var mml_builder = mml_store.mml_builder({dbname: 'my_database', table:'my_tableismo'}, function() {
+    var mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'my_database', table:'my_tableismo'}, function() {
       mml_builder.setStyle(style, function(err, output){
         if ( err ) { done(err); return; }
         mml_builder.delStyle(function(err, data){
@@ -492,7 +501,7 @@ suite('mml_builder', function() {
 
   test('retrieves a non-existant style should return default style', function(done) {
     var mml_store = new grainstore.MMLStore(redis_opts);
-    var mml_builder = mml_store.mml_builder({dbname: 'my_databaasez', table:'my_tablez'}, function() {
+    var mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'my_databaasez', table:'my_tablez'}, function() {
       mml_builder.getStyle(function(err, data){
         if ( err ) { done(err); return; }
         assert.equal(data.style, "#my_tablez {marker-fill: #FF6600;marker-opacity: 1;marker-width: 8;marker-line-color: white;marker-line-width: 3;marker-line-opacity: 0.9;marker-placement: point;marker-type: ellipse;marker-allow-overlap: true;}");
@@ -503,7 +512,7 @@ suite('mml_builder', function() {
 
   test('default style in 2.1.0 target mapnik version', function(done) {
     var mml_store = new grainstore.MMLStore(redis_opts, {mapnik_version: '2.1.0'});
-    var mml_builder = mml_store.mml_builder({dbname: 'd', table:'t'}, function() {
+    var mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'd', table:'t'}, function() {
     var default_style_210 = '#t[mapnik-geometry-type=1] {marker-fill: #FF6600;marker-opacity: 1;marker-width: 16;marker-line-color: white;marker-line-width: 3;marker-line-opacity: 0.9;marker-placement: point;marker-type: ellipse;marker-allow-overlap: true;}#t[mapnik-geometry-type=2] {line-color:#FF6600; line-width:1; line-opacity: 0.7;}#t[mapnik-geometry-type=3] {polygon-fill:#FF6600; polygon-opacity: 0.7; line-opacity:1; line-color: #FFFFFF;}';
       mml_builder.getStyle(function(err, data){
         if ( err ) { done(err); return; }
@@ -515,7 +524,7 @@ suite('mml_builder', function() {
 
   test('default style in 2.2.0 target mapnik version', function(done) {
     var mml_store = new grainstore.MMLStore(redis_opts, {mapnik_version: '2.2.0'});
-    var mml_builder = mml_store.mml_builder({dbname: 'd', table:'t'}, function() {
+    var mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'd', table:'t'}, function() {
     var default_style_220 = '#t["mapnik::geometry_type"=1] {marker-fill: #FF6600;marker-opacity: 1;marker-width: 16;marker-line-color: white;marker-line-width: 3;marker-line-opacity: 0.9;marker-placement: point;marker-type: ellipse;marker-allow-overlap: true;}#t["mapnik::geometry_type"=2] {line-color:#FF6600; line-width:1; line-opacity: 0.7;}#t["mapnik::geometry_type"=3] {polygon-fill:#FF6600; polygon-opacity: 0.7; line-opacity:1; line-color: #FFFFFF;}';
       mml_builder.getStyle(function(err, data){
         if ( err ) { done(err); return; }
@@ -528,7 +537,7 @@ suite('mml_builder', function() {
   test('retrieves a dynamic style should return XML with dynamic style', function(done) {
     var mml_store = new grainstore.MMLStore(redis_opts);
     var mml_builder = mml_store.mml_builder(
-      {dbname: 'my_databaasez', table:'my_tablez', style: '#my_tablez {marker-fill: #000000;}'},
+      {dbtype: 'postgis', dbname: 'my_databaasez', table:'my_tablez', style: '#my_tablez {marker-fill: #000000;}'},
       function() {
         mml_builder.toXML(function(err, data){
           if ( err ) { mml_builder.delStyle(function() { done(err); }); return; }
@@ -540,10 +549,29 @@ suite('mml_builder', function() {
       });
   });
 
+  test('includes correct datasource type in XML', function(done) {
+    var mml_store = new grainstore.MMLStore(redis_opts);
+    var mml_builder = mml_store.mml_builder(
+      { dbtype: 'custom_dbtype', dbname: 'd2', table:'t',
+        interactivity: 'a,b'
+      },
+      function() {
+        mml_builder.toXML(function(err, data){
+          if ( err ) { mml_builder.delStyle(function() { done(err); }); return; }
+		  console.log(data);
+          var xmlDoc = libxmljs.parseXmlString(data);
+          var x = xmlDoc.get("//Parameter[@name='type']");
+          assert.ok(x);
+          assert.equal(x.text(), "custom_dbtype");
+          mml_builder.delStyle(done);
+        });
+      });
+  });
+  
   test('includes interactivity in XML', function(done) {
     var mml_store = new grainstore.MMLStore(redis_opts);
     var mml_builder = mml_store.mml_builder(
-      { dbname: 'd2', table:'t',
+      { dbtype: 'postgis', dbname: 'd2', table:'t',
         interactivity: 'a,b'
       },
       function() {
@@ -565,7 +593,7 @@ suite('mml_builder', function() {
   test('zoom variable is special', function(done) {
     var mml_store = new grainstore.MMLStore(redis_opts);
     var mml_builder = mml_store.mml_builder(
-      { dbname: 'd', table:'t',
+      { dbtype: 'postgis', dbname: 'd', table:'t',
         style: '#t [ zoom  >=  4 ] {marker-fill:red;}'
       },
       function() {
@@ -584,7 +612,7 @@ suite('mml_builder', function() {
   test('quotes in CartoCSS are accepted', function(done) {
     var mml_store = new grainstore.MMLStore(redis_opts);
     var mml_builder = mml_store.mml_builder(
-      { dbname: 'd', table:'t',
+      { dbtype: 'postgis', dbname: 'd', table:'t',
         sql: [ "select 'x' as n, 'SRID=3857;POINT(0 0)'::geometry as the_geom_webmercator",
                "select 'x' as n, 'SRID=3857;POINT(2 0)'::geometry as the_geom_webmercator" ],
         style: [ '#t [n="t\'q"] {marker-fill:red;}', '#t[n=\'t"q\'] {marker-fill:green;}' ]
@@ -619,7 +647,7 @@ suite('mml_builder', function() {
     var style3 = "#tab { marker-fill: #333333; }";
     Step(
       function createBase() {
-        base_builder = mml_store.mml_builder({dbname:'db', table:'tab'},
+        base_builder = mml_store.mml_builder({dbtype: 'postgis', dbname:'db', table:'tab'},
           this);
       },
       function setBaseStyle(err, data) {
@@ -628,7 +656,7 @@ suite('mml_builder', function() {
       },
       function createCustom(err, data) {
         if ( err ) throw err;
-        cust_builder = mml_store.mml_builder({dbname:'db', table:'tab',
+        cust_builder = mml_store.mml_builder({dbtype: 'postgis', dbname:'db', table:'tab',
             style: style2}, this);
       },
       function checkRedis1(err, data) {
@@ -746,7 +774,7 @@ suite('mml_builder', function() {
 
   test('can retrieve basic XML', function(done) {
     var mml_store = new grainstore.MMLStore(redis_opts);
-    var mml_builder = mml_store.mml_builder({dbname: 'my_databaasez', table:'my_tablez'}, function() {
+    var mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'my_databaasez', table:'my_tablez'}, function() {
       mml_builder.toXML(function(err, data){
         var xmlDoc = libxmljs.parseXmlString(data);
         var sql = xmlDoc.get("//Parameter[@name='table']");
@@ -762,7 +790,7 @@ suite('mml_builder', function() {
           user:'u', host:'h', port:'12', password:'p'
         }
     });
-    var mml_builder = mml_store.mml_builder({dbname: 'd', table:'t'}, function() {
+    var mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'd', table:'t'}, function() {
       mml_builder.toXML(function(err, data){
         assert.ok(data, err);
         var xmlDoc = libxmljs.parseXmlString(data);
@@ -783,7 +811,7 @@ suite('mml_builder', function() {
     // TODO: use Step !
     var mml_store = new grainstore.MMLStore(redis_opts);
     var mml_builder = mml_store.mml_builder(
-      {dbname: 'db', table:'tab', sql: "SELECT * FROM my_face"},
+      {dbtype: 'postgis', dbname: 'db', table:'tab', sql: "SELECT * FROM my_face"},
       function(err, data) {
         if ( err ) { done(err); return; }
         mml_builder.toXML(function(err, data){
@@ -793,7 +821,7 @@ suite('mml_builder', function() {
           assert.equal(sql.text(), "SELECT * FROM my_face");
           // TODO: check redis status now
           var mml_builder2 = mml_store.mml_builder(
-            {dbname: 'db', table:'tab'},
+            {dbtype: 'postgis', dbname: 'db', table:'tab'},
             function(err, data) {
               if ( err ) { done(err); return; }
               mml_builder2.toXML(function(err, data){
@@ -815,7 +843,7 @@ suite('mml_builder', function() {
   test("can retrieve basic XML specifying polygon default geom", function(done){
     var mml_store = new grainstore.MMLStore(redis_opts);
     var mml_builder = mml_store.mml_builder(
-      {dbname: 'my_databaasez', table: 'my_polygon_tablez', geom_type: 'polygon'},
+      {dbtype: 'postgis', dbname: 'my_databaasez', table: 'my_polygon_tablez', geom_type: 'polygon'},
       function() {
         mml_builder.toXML(function(err, data){
           var xmlDoc = libxmljs.parseXmlString(data);
@@ -831,7 +859,7 @@ suite('mml_builder', function() {
   test("bails out on unsupported geometry type with mapnik 2.0.x", function(done){
     var mml_store = new grainstore.MMLStore(redis_opts, {mapnik_version: '2.0.2'});
     var mml_builder = mml_store.mml_builder(
-      {dbname: 'd', table: 't', geom_type: 'geometry'},
+      {dbtype: 'postgis', dbname: 'd', table: 't', geom_type: 'geometry'},
       function(err) {
         assert.ok(err);
         assert.equal(err.message, "No style available for geometry of type 'geometry'");
@@ -841,7 +869,7 @@ suite('mml_builder', function() {
 
   test("can set style and then retrieve XML", function(done){
     var mml_store = new grainstore.MMLStore(redis_opts);
-    var mml_builder = mml_store.mml_builder({dbname: 'my_databaasez', table:'my_special_design'},
+    var mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'my_databaasez', table:'my_special_design'},
       function() {
         var style = "#my_special_design {\n  polygon-fill: #fff;\n}";
         mml_builder.setStyle(style, function(err, output){
@@ -858,7 +886,7 @@ suite('mml_builder', function() {
   test("can set style and then retrieve XML specifying sql", function(done){
     var mml_store = new grainstore.MMLStore(redis_opts);
     var mml_builder = mml_store.mml_builder(
-      {dbname: 'my_databaasez', table:'big_test', sql: "select * from my_fish"},
+      {dbtype: 'postgis', dbname: 'my_databaasez', table:'big_test', sql: "select * from my_fish"},
       function() {
         var style = "#big_test {\n  polygon-fill: #000;\n}";
         mml_builder.setStyle(style, function(err, output){
@@ -875,7 +903,7 @@ suite('mml_builder', function() {
   test("can set style and then retrieve XML specifying sql, then update style and regenerate", function(done){
     var mml_store = new grainstore.MMLStore(redis_opts);
     var mml_builder = mml_store.mml_builder(
-      {dbname: 'my_databaasez', table:'big_tester', sql: "select * from my_fish"},
+      {dbtype: 'postgis', dbname: 'my_databaasez', table:'big_tester', sql: "select * from my_fish"},
       function() {
         var style = "#big_tester {\n  polygon-fill: #000;\n}";
         mml_builder.setStyle(style, function(err, output){
@@ -901,7 +929,7 @@ suite('mml_builder', function() {
   test('by default datasource has full webmercator extent', function(done) {
     var mml_store = new grainstore.MMLStore(redis_opts);
     var mml_builder = mml_store.mml_builder(
-      {dbname: 'my_database', table:'my_table'},
+      {dbtype: 'postgis', dbname: 'my_database', table:'my_table'},
       function() {
         var baseMML = mml_builder.baseMML();
         assert.ok(_.isArray(baseMML.Layer));
@@ -913,7 +941,7 @@ suite('mml_builder', function() {
   test('SRS in XML should use the "+init=epsg:xxx" form', function(done) {
     var mml_store = new grainstore.MMLStore(redis_opts);
     var mml_builder = mml_store.mml_builder(
-      {dbname: 'my_databaasez', table:'my_tablez'},
+      {dbtype: 'postgis', dbname: 'my_databaasez', table:'my_tablez'},
       function() {
         mml_builder.toXML(function(err, data){
           if ( err ) { mml_builder.delStyle(function() { done(err); }); return; }
@@ -987,7 +1015,7 @@ suite('mml_builder', function() {
       var xml_re = style_spec.xml_re;
 
       var mml_store = new grainstore.MMLStore(redis_opts, {cachedir: cachedir, mapnik_version: target_mapnik_version, cachettl:0.01});
-      var mml_builder = mml_store.mml_builder({dbname: 'db', table:'tab'}, function() {
+      var mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'db', table:'tab'}, function() {
 
         Step(
           function setStyle() {
@@ -1064,7 +1092,7 @@ suite('mml_builder', function() {
           }
       }
 
-      var b1 = store1.mml_builder({dbname: 'd', table:'t1', style: style1}, function(e) {
+      var b1 = store1.mml_builder({dbtype: 'postgis', dbname: 'd', table:'t1', style: style1}, function(e) {
         if ( e ) { finish(e); return; }
         b1.toXML(function(e, data){
           if ( e ) { finish(e); return; }
@@ -1077,7 +1105,7 @@ suite('mml_builder', function() {
         });
       });
 
-      var b2 = store2.mml_builder({dbname: 'd', table:'t2', style: style2}, function(e) {
+      var b2 = store2.mml_builder({dbtype: 'postgis', dbname: 'd', table:'t2', style: style2}, function(e) {
         if ( e ) { finish(e); return; }
         b2.toXML(function(e, data){
           if ( e ) { finish(e); return; }
@@ -1097,7 +1125,7 @@ suite('mml_builder', function() {
     var mml_builder0, mml_builder, xml0;
     Step (
       function builder0() {
-        mml_builder0 = mml_store.mml_builder({dbname: 'db', table:'tab'}, this);
+        mml_builder0 = mml_store.mml_builder({dbtype: 'postgis', dbname: 'db', table:'tab'}, this);
       },
       function getXML0(err) {
         if ( err ) { done(err); return; }
@@ -1110,7 +1138,7 @@ suite('mml_builder', function() {
       },
       function builder1(err, val) {
         if ( err ) { done(err); return; }
-        mml_builder = mml_store.mml_builder({dbname: 'db', table:'tab'}, this);
+        mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'db', table:'tab'}, this);
       },
       function getXML1(err) {
         if ( err ) { done(err); return; }
@@ -1132,7 +1160,7 @@ suite('mml_builder', function() {
 
     Step(
       function initBuilder() {
-        mml_builder = mml_store.mml_builder({dbname: 'db', table:'t'}, this);
+        mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'db', table:'t'}, this);
       },
       function setStyle(err) {
         if ( err ) { done(err); return; }
@@ -1161,15 +1189,15 @@ suite('mml_builder', function() {
     var mml_builder;
     Step(
       function initBuilder() {
-        mml_builder = mml_store.mml_builder({dbname: 'db', table:'t', sql:'select * from test_table'}, this);
+        mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'db', table:'t', sql:'select * from test_table'}, this);
       },
       function initBuilder2(err) {
         if ( err ) { done(err); return; }
-        mml_builder = mml_store.mml_builder({dbname: 'db', table:'t', sql:'select * from test_table limit 1'}, this);
+        mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'db', table:'t', sql:'select * from test_table limit 1'}, this);
       },
       function initBuilder3(err) {
         if ( err ) { done(err); return; }
-        mml_builder = mml_store.mml_builder({dbname: 'db', table:'t'}, this);
+        mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'db', table:'t'}, this);
       },
       function checkRedis0(err, data) {
         if ( err ) { done(err); return; }
@@ -1233,7 +1261,7 @@ suite('mml_builder', function() {
 
     Step(
       function initBuilder0() {
-        mml_builder0 = mml_store0.mml_builder({dbname: 'db', table:'t'}, this);
+        mml_builder0 = mml_store0.mml_builder({dbtype: 'postgis', dbname: 'db', table:'t'}, this);
       },
       function setStyle_and_initBuilder1(err) {
         if ( err ) { done(err); return; }
@@ -1243,7 +1271,7 @@ suite('mml_builder', function() {
           checkWhenReady();
         });
         // NOTE: intentionally initializing BEFORE waiting for setStyle above
-        mml_builder1 = mml_store1.mml_builder({dbname: 'db', table:'t'}, function(err) {
+        mml_builder1 = mml_store1.mml_builder({dbtype: 'postgis', dbname: 'db', table:'t'}, function(err) {
           if ( err ) { done(err); return; }
           completed.push('get');
           ready = true;
@@ -1256,7 +1284,7 @@ suite('mml_builder', function() {
     var style = "#t { marker-width: 3; }";
     var style_converted = '#t { marker-width:6; ["mapnik::geometry_type"=1] { marker-placement:point; marker-type:ellipse; } ["mapnik::geometry_type">1] { marker-placement:line; marker-type:arrow; marker-transform:scale(.5, .5); marker-clip:false; } }';
     var mml_store = new grainstore.MMLStore(redis_opts, {mapnik_version: '2.1.0'});
-    var mml_builder = mml_store.mml_builder({dbname: 'my_database', table:'t'}, function() {
+    var mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'my_database', table:'t'}, function() {
       mml_builder.setStyle(style, function(err, output){
         if ( err ) { done(err); return; }
         mml_builder.getStyle(function(err, data){
@@ -1273,7 +1301,7 @@ suite('mml_builder', function() {
   test('throws useful error message on invalid text-name', function(done) {
     var style = "#t { text-name: invalid; text-face-name:'Dejagnu'; }";
     var mml_store = new grainstore.MMLStore(redis_opts, {mapnik_version: '2.1.0'});
-    var mml_builder = mml_store.mml_builder({dbname: 'd', table:'t', style:style}, function(err) {
+    var mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'd', table:'t', style:style}, function(err) {
         assert.ok(err);
         var re = new RegExp(/Invalid value for text-name/);
         assert.ok(err.message.match(re), 'No match for ' + re + ' in "' + err.message + '"');
@@ -1289,7 +1317,7 @@ suite('mml_builder', function() {
     var mml_builder;
     Step(
       function initBuilder() {
-        mml_builder = mml_store.mml_builder({dbname: 'd2', table:'t', style:style, style_version:'2.1.0'}, this);
+        mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'd2', table:'t', style:style, style_version:'2.1.0'}, this);
       },
       function getXML(err, data) {
         if ( err ) throw err;
@@ -1340,7 +1368,7 @@ suite('mml_builder', function() {
         this);
       },
       function initBuilder() {
-        builder = mml_store.mml_builder({dbname: 'd', table:'t'}, this);
+        builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'd', table:'t'}, this);
       },
       function checkInit_getXML(err, b) {
         if ( err ) throw err;
@@ -1387,7 +1415,7 @@ suite('mml_builder', function() {
     var builder;
     Step(
       function initBuilder() {
-        builder = mml_store.mml_builder({dbname: 'd', table:'t'}, this);
+        builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'd', table:'t'}, this);
       },
       function setGoodFont(err, b) {
         if ( err ) throw err;
@@ -1421,7 +1449,7 @@ suite('mml_builder', function() {
         test('test transformation from version ' + version + ' to 2.3.0 target mapnik version', function(done) {
             var style = "#my_table {\n  polygon-fill: #fff;\n}";
             var mml_store = new grainstore.MMLStore(redis_opts, {mapnik_version: '2.3.0'});
-            var mml_builder = mml_store.mml_builder({dbname: 'my_database', table:'my_table'}, function() {
+            var mml_builder = mml_store.mml_builder({dbtype: 'postgis', dbname: 'my_database', table:'my_table'}, function() {
                 mml_builder.setStyle(style, function(err, output){
                     if ( err ) { done(err); return; }
                     mml_builder.getStyle(function(err, data){

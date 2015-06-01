@@ -64,6 +64,7 @@ suite('mml_builder multilayer', function() {
     Step(
       function initBuilder() {
         mml_builder = mml_store.mml_builder({
+              dbtype: 'postgis',
               dbname: 'my_database',
               sql:['SELECT ST_MakePoint(0,0)','SELECT ST_MakeLine(ST_MakePoint(-10,-5),ST_MakePoint(10,-5))'],
               style: [style0, style1],
@@ -113,6 +114,7 @@ suite('mml_builder multilayer', function() {
     Step(
       function initBuilder() {
         mml_builder = mml_store.mml_builder({
+              dbtype: 'postgis',
               dbname: 'my_database',
               sql:['SELECT ST_MakePoint(0,0) g','SELECT ST_MakeLine(ST_MakePoint(-10,-5),ST_MakePoint(10,-5)) g2'],
               style: [style0, style1],
@@ -169,6 +171,7 @@ suite('mml_builder multilayer', function() {
     Step(
       function initBuilder() {
         mml_builder = mml_store.mml_builder({
+              dbtype: 'postgis',
               dbname: 'my_database',
               sql:['SELECT ST_MakePoint(0,0) g',
                    'SELECT ST_AsRaster(ST_MakePoint(0,0),1.0,1.0) r'],
@@ -217,6 +220,7 @@ suite('mml_builder multilayer', function() {
     Step(
       function initBuilder() {
         mml_builder = mml_store.mml_builder({
+              dbtype: 'postgis',
               dbname: 'my_database',
               sql:['SELECT ST_MakePoint(0,0) g',
                    'SELECT ST_AsRaster(ST_MakePoint(0,0),1.0,1.0) r',
@@ -294,6 +298,7 @@ suite('mml_builder multilayer', function() {
       Step(
           function initBuilder() {
               mml_builder = mml_store.mml_builder({
+                  dbtype: 'postgis',
                   dbname: 'my_database',
                   sql:['SELECT ST_MakePoint(0,0) g',
                       'SELECT ST_AsRaster(ST_MakePoint(0,0),1.0,1.0) r'],
@@ -333,6 +338,7 @@ suite('mml_builder multilayer', function() {
                 mmlBuilder = mmlStore.mml_builder({
                     dbuser: default_user,
                     dbpassword: default_pass,
+                    dbtype: 'postgis',
                     dbname: 'my_database',
                     sql: [queryMakeLine, queryMakePoint],
                     datasource_extend: [,datasource_extend],
@@ -390,6 +396,7 @@ suite('mml_builder multilayer', function() {
     Step(
       function initBuilder() {
         mml_builder = mml_store.mml_builder({
+              dbtype: 'postgis',
               dbname: 'my_database',
               sql:['SELECT ST_MakePoint(0,0)','SELECT ST_MakeLine(ST_MakePoint(-10,-5),ST_MakePoint(10,-5))'],
               style: [style0, style1],
@@ -420,6 +427,7 @@ suite('mml_builder multilayer', function() {
     Step(
       function initBuilder() {
         mml_builder = mml_store.mml_builder({
+              dbtype: 'postgis',
               dbname: 'my_database',
               sql:[sql0, sql1],
               style: [style0, style1],
@@ -482,6 +490,7 @@ suite('mml_builder multilayer', function() {
     Step(
       function initBuilder() {
         mml_builder = mml_store.mml_builder({
+              dbtype: 'postgis',
               dbname: 'my_database',
               sql:['SELECT ST_MakePoint(0,0)','SELECT ST_MakeLine(ST_MakePoint(-10,-5),ST_MakePoint(10,-5))'],
               style: [style0, style1],
@@ -521,6 +530,7 @@ suite('mml_builder multilayer', function() {
     Step(
       function initBuilder() {
         mml_builder = mml_store.mml_builder({
+              dbtype: 'postgis',
               dbname: 'my_database',
               sql:['SELECT ST_MakePoint(0,0)'],
               style: [style0],
@@ -559,6 +569,7 @@ suite('mml_builder multilayer', function() {
     Step(
       function initBuilder() {
         mml_builder = mml_store.mml_builder({
+              dbtype: 'postgis',
               dbname: 'my_database',
               sql:['SELECT ST_MakePoint(0,0)','SELECT ST_MakeLine(ST_MakePoint(-10,-5),ST_MakePoint(10,-5))'],
               style: fullstyle, 
@@ -605,6 +616,7 @@ suite('mml_builder multilayer', function() {
     Step(
       function initBuilder() {
         mml_builder = mml_store.mml_builder({
+              dbtype: 'postgis',
               dbname: 'my_database',
               sql:[sql0, sql1],
               interactivity: [iact0, iact1],
@@ -627,6 +639,7 @@ suite('mml_builder multilayer', function() {
     Step(
       function initBuilder() {
         mml_builder = mml_store.mml_builder({
+              dbtype: 'postgis',
               dbname: 'my_database',
               sql: 'select 1',
               layer: 'cipz'
