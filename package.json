@@ -21,9 +21,9 @@
       "Sandro Santilli <strk@vizzuality.com>"
     ],
     "dependencies": {
-        "redis-mpool": "git://github.com/BHare1985/node-redis-mpool.git",
+        "redis-mpool": "https://github.com/BHare1985/node-redis-mpool/tarball/master",
         "carto": "https://github.com/CartoDB/carto/tarball/0.9.5-cdb2",
-        "millstone": "git://github.com/BHare1985/millstone.git",
+        "millstone": "https://github.com/BHare1985/millstone/tarball/master",
         "step": "~0.0.5",
         "underscore": "~1.6.0",
         "semver": "~1.1.4"
