@@ -5,6 +5,8 @@ var libxmljs   = require('libxmljs');
 var step       = require('step');
 var http       = require('http');
 var fs         = require('fs');
+var os         = require('os');
+var path       = require('path');
 
 var server;
 
@@ -25,20 +27,6 @@ var DEFAULT_POINT_STYLE = [
 ].join('');
 
 var SAMPLE_SQL = 'SELECT ST_MakePoint(0,0)';
-
-
-platformPath = function(path) {
-    if (process.platform !== 'win32') {
-        return path;
-    }
-
-    // single \ will escape regex, so need escaped \ (i.e \\)
-    var windows = path.replace(/[\/]/g, '\\\\');
-    if (windows.substring(0, 1) == "\\") {
-        windows = 'C:' + windows;
-    }
-    return windows;
-}
 
 suite('mml_builder', function() {
 
@@ -304,7 +292,7 @@ suite('mml_builder', function() {
                 done();
             });
     });
-    
+
   test('includes correct datasource type in XML', function(done) {
     var mml_store = new grainstore.MMLStore();
     mml_store.mml_builder(
@@ -506,8 +494,8 @@ suite('mml_builder', function() {
 
   test('store, retrive and convert to XML a set of reference styles', function(done) {
 
-    var cachedir = '/tmp/gt-' + process.pid;
-    var regexPath = platformPath(cachedir + '/cache/.*.svg');
+    var cachedir = path.join(os.tmpdir(),'/gt-' + process.pid);
+
     var styles = [
         // point-transform without point-file
         {
@@ -517,12 +505,12 @@ suite('mml_builder', function() {
         // localize external resources
         {
             cartocss: "#tab { point-file: url('http://localhost:" + server_port + "/circle.svg'); }",
-            xml_re: new RegExp('PointSymbolizer file="' + regexPath + '"')
+            xml_re: new RegExp('PointSymbolizer file="' + path.join(cachedir, 'cache', '.*.svg').replace(/\\/g, '\\\\') +'"')
         },
         // localize external resources with a + in the url
         {
             cartocss: "#tab { point-file: url('http://localhost:" + server_port + "/+circle.svg'); }",
-            xml_re: new RegExp('PointSymbolizer file="' + regexPath + '"')
+            xml_re: new RegExp('PointSymbolizer file="' + path.join(cachedir, 'cache', '.*.svg').replace(/\\/g, '\\\\') +'"')
         },
         // transform marker-width and height from 2.0.0 to 2.1.0 resources with a + in the url
         {
@@ -605,19 +593,17 @@ suite('mml_builder', function() {
   test('external resources are downloaded in isolation', function(done) {
 
       var style = "{ point-file: url('http://localhost:" + server_port + "/circle.svg'); }";
-      var cachedir = '/tmp/gt1-' + process.pid;
+      var cachedir = path.join(os.tmpdir(),'/gt1-' + process.pid);
 
       var cdir1 = cachedir + '1';
       var style1 = '#t1 ' + style;
       var store1 = new grainstore.MMLStore({cachedir: cdir1 });
-      var regexPath1 = platformPath(cdir1 + '/cache/.*.svg');
-      var re1 = new RegExp('PointSymbolizer file="'+regexPath1+'"');
+      var re1 = new RegExp('PointSymbolizer file="' +path.join(cdir1, 'cache', '.*.svg').replace(/\\/g, '\\\\') +'"');
 
       var cdir2 = cachedir + '2';
       var style2 = '#t2 ' + style;
       var store2 = new grainstore.MMLStore({cachedir: cdir2 });
-      var regexPath2 = platformPath(cdir2 + '/cache/.*.svg');
-      var re2 = new RegExp('PointSymbolizer file="'+regexPath2+'"');
+      var re2 = new RegExp('PointSymbolizer file="' + path.join(cdir2, 'cache', '.*.svg').replace(/\\/g, '\\\\') +'"');
 
       var pending = 2;
       var err = [];
