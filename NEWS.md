@@ -1,5 +1,19 @@
+Version 1.2.1
+2016-mm-dd
+
+
+Version 1.2.0
+2016-06-07
+
+ - Allow to provide an array of ids to override layer ids/names #111
+ - Upgrade libxmljs development dependency to 0.18.0
+ - Testing/working with Node.js 0.10.x and Node.js 0.12.x
+
+
 Version 1.1.1
-2015-mm-dd
+2016-02-04
+
+ - Upgrades millstone version to 0.6.16
 
 
 Version 1.1.0
