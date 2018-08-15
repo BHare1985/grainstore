@@ -1,5 +1,53 @@
-Version 1.2.1
-2016-mm-dd
+Version 1.6.4
+2017-10-04
+ - Upgrade debug to 3.1.0.
+
+
+Version 1.6.3
+2017-04-24
+ - While transforming styles from 2.3.x to 3.x version do not set property to default value if parent selector has the same property already defined #137.
+
+
+Version 1.6.2
+2017-03-29
+ - Fix issue when creating unused workers at startup time #134.
+
+
+Version 1.6.1
+2017-03-17
+ - Define a default map maximum-extent property.
+
+
+Version 1.6.0
+2017-03-02
+ - Now MMLBuilder renders XMLs outside of the main event loop setting `use_workers` config param to `true` #132
+ - Allow overriding layer's SRID #126
+
+
+Version 1.5.1
+2017-02-06
+
+ - Style translator, `building-fill` default color back to gray #122.
+ - Style translator, allow to use url without quotes #121.
+ - Style translator, fix typo #120.
+
+
+Version 1.5.0
+2017-01-27
+
+ - Support Mapnik Reference 3.0.x
+
+
+Version 1.4.0
+2016-12-13
+
+ - Improve debugging: DEBUG=grainstore:renderer:xml will output the final generated XML.
+
+
+Version 1.3.0
+2016-12-01
+
+ - Add option to render XML with a child process, not blocking the main thread.
 
 
 Version 1.2.0
@@ -253,7 +301,7 @@ Version 0.11.0 - Multilayer
  - Multilayer support:
     - Support arrays for "sql", "style" and "style_version" parameters (#48)
     - New getToken() API method
-    - New touch() API method 
+    - New touch() API method
     - Probabilistic based garbage collection for table-less styles
 
 Version 0.10.9 - "EOW"
@@ -383,7 +431,7 @@ Version 0.7.0
 2012-09-28
 
  - Style versioning
-   - Allow specifying style version in .setStyle 
+   - Allow specifying style version in .setStyle
    - Return style version from .getStyle
    - Include style version in store
    - Allow specifying target mapnik version
@@ -415,7 +463,7 @@ Version 0.6.2
  - Add MMBuilder.resetStyle method to re-render an XML style
  - Reconstruct the XML when lost in redis
  - Change localized resources path from <dbname>-<tablename>
-   to <dbname>/<tablename>. 
+   to <dbname>/<tablename>.
 
 Version 0.6.1
 2012-09-18
@@ -448,7 +496,7 @@ Version 0.3.1
 2012-07-25
 
  - Loosen carto dependency to include the 0.8 series
- - Drop 'srs' dependency, use "+init=epsg:xxx" in map XML to 
+ - Drop 'srs' dependency, use "+init=epsg:xxx" in map XML to
    allow mapnik do special handling of wgs84->webmercator reprojection
 
 Version 0.3.0
@@ -476,17 +524,17 @@ Version 0.2.3
  - Tests ported to mocha (#11)
  - Require libxmljs-0.5.x and redis-0.7.2 (for node-0.8.x compatibility)
 
-Version 0.2.2 
+Version 0.2.2
 2012-06-26
 
  - Require leaks free 'carto' 0.7.0 and 'srs' 0.2.14 (#12)
  - Testsuite improvements:
-   - Add support for make check 
+   - Add support for make check
    - Fix invalid syntax used in tests for mml_builder (#13)
    - Print unexpected error message in mml_buider test
 
 
-Version 0.2.1 
+Version 0.2.1
 2012-06-06
 
 Version 0.2.0
