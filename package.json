@@ -34,7 +34,7 @@
     "step": "~0.0.5"
   },
   "scripts": {
-    "test": "make test"
+    "test": "mocha -R dot -u tdd -t 1000 test/*.js"
   },
   "engines": {
     "node": ">=0.10"
